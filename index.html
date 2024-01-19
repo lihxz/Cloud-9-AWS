@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .cell:hover {
+            background-color: #eee;
+        }
+
+        #restartButton {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #score {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #playerNames {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="playerNames">
+    <label for="playerXName">Player X Name: </label>
+    <input type="text" id="playerXName" placeholder="Enter name for Player X">
+    <br>
+    <label for="playerOName">Player O Name: </label>
+    <input type="text" id="playerOName" placeholder="Enter name for Player O">
+</div>
+
+<div class="board" id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+</div>
+
+<button id="restartButton" onclick="restartGame()">Restart</button>
+
+<div id="score">
+    <p><span id="playerXSpan">Player X</span>: <span id="playerXScore">0</span></p>
+    <p><span id="playerOSpan">Player O</span>: <span id="playerOScore">0</span></p>
+</div>
+
+<script>
+    const board = document.getElementById('board');
+    const cells = document.querySelectorAll('.cell');
+    const restartButton = document.getElementById('restartButton');
+    const playerXNameInput = document.getElementById('playerXName');
+    const playerONameInput = document.getElementById('playerOName');
+    const playerXSpan = document.getElementById('playerXSpan');
+    const playerOSpan = document.getElementById('playerOSpan');
+    const playerXScoreElement = document.getElementById('playerXScore');
+    const playerOScoreElement = document.getElementById('playerOScore');
+
+    let currentPlayer = 'X';
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+    let playerXScore = 0;
+    let playerOScore = 0;
+
+    setPlayerNames();
+
+    cells.forEach(cell => {
+        cell.addEventListener('click', () => makeMove(cell.dataset.index));
+    });
+
+    restartButton.addEventListener('click', restartGame);
+
+    function makeMove(index) {
+        if (!gameActive || gameBoard[index] !== '') return;
+
+        gameBoard[index] = currentPlayer;
+        updateBoard();
+        checkWinner();
+        togglePlayer();
+    }
+
+    function updateBoard() {
+        cells.forEach((cell, index) => {
+            cell.textContent = gameBoard[index];
+        });
+    }
+
+    function checkWinner() {
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        for (const pattern of winPatterns) {
+            const [a, b, c] = pattern;
+            if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                alert(`${getPlayerName(currentPlayer)} wins!`);
+                updateScore();
+                gameActive = false;
+                break;
+            }
+        }
+    }
+
+    function togglePlayer() {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+
+    function restartGame() {
+        gameBoard = ['', '', '', '', '', '', '', '', ''];
+        gameActive = true;
+        updateBoard();
+    }
+
+    function updateScore() {
+        if (currentPlayer === 'X') {
+            playerXScore++;
+            playerXScoreElement.textContent = playerXScore;
+        } else {
+            playerOScore++;
+            playerOScoreElement.textContent = playerOScore;
+        }
+    }
+
+    function setPlayerNames() {
+        const playerXName = prompt("Enter name for Player X:");
+        const playerOName = prompt("Enter name for Player O:");
+
+        playerXSpan.textContent = playerXName;
+        playerOSpan.textContent = playerOName;
+    }
+
+    function getPlayerName(player) {
+        return player === 'X' ? playerXSpan.textContent : playerOSpan.textContent;
+    }
+</script>
+</body>
+</html>
